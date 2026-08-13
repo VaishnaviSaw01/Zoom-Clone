@@ -361,12 +361,12 @@ function AudioTab() {
 
         const data = new Uint8Array(analyser.frequencyBinCount);
 
-        function tick() {
+        const tick = () => {
           analyser.getByteFrequencyData(data);
           const avg = data.reduce((a, b) => a + b, 0) / data.length;
           setVolumeLevel(Math.min(100, Math.round((avg / 128) * 100)));
           animFrameRef.current = requestAnimationFrame(tick);
-        }
+        };
         tick();
       } catch {
         // permission re-revoked or device unavailable
