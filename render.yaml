@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: zoom-clone-api
+    env: python
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: zoom-clone-db
+          property: connectionString
+
+databases:
+  - name: zoom-clone-db
+    databaseName: zoom_clone
+    user: zoom_user
+    plan: free

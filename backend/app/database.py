@@ -10,13 +10,20 @@ from sqlalchemy.orm import sessionmaker, declarative_base
 
 # Store the DB file next to this package so it is easy to locate / delete.
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DATABASE_URL = f"sqlite:///{os.path.join(BASE_DIR, '..', 'zoom.db')}"
+
+# Read DATABASE_URL from env, otherwise fallback to SQLite
+DATABASE_URL = os.environ.get("DATABASE_URL", f"sqlite:///{os.path.join(BASE_DIR, '..', 'zoom.db')}")
+
+# Render often provides postgres:// URLs, but SQLAlchemy requires postgresql://
+if DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
 
 # check_same_thread=False is required for SQLite when used with FastAPI
-# (multiple threads can share the same connection pool).
+connect_args = {"check_same_thread": False} if DATABASE_URL.startswith("sqlite") else {}
+
 engine = create_engine(
     DATABASE_URL,
-    connect_args={"check_same_thread": False},
+    connect_args=connect_args,
     echo=False,  # set True to log SQL statements during development
 )
 
