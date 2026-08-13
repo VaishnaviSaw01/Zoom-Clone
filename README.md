@@ -221,7 +221,7 @@ zoom-clone/
 
 | Service | URL |
 |---|---|
-| Frontend (Vercel) | zoom-clone-six-dusky.vercel.app |
+| Frontend (Vercel) | https://zoom-clone-six-dusky.vercel.app |
 | Backend (Render) | https://zoom-clone-avyc.onrender.com |
 
 ---
