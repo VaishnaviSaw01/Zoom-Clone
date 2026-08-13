@@ -38,7 +38,7 @@ export function useAudioLevel(
 
     const buf = new Uint8Array(analyser.frequencyBinCount);
 
-    function tick() {
+    const tick = () => {
       analyser.getByteFrequencyData(buf);
       // Compute RMS as a 0-100 value
       let sum = 0;
@@ -46,7 +46,7 @@ export function useAudioLevel(
       const rms = Math.sqrt(sum / buf.length);
       setLevel(Math.min(100, (rms / 128) * 100));
       rafRef.current = requestAnimationFrame(tick);
-    }
+    };
 
     rafRef.current = requestAnimationFrame(tick);
 
