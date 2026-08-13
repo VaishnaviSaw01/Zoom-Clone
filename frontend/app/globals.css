@@ -1,0 +1,77 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    font-family: 'Inter', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply bg-white text-zoom-dark;
+  }
+}
+
+@layer components {
+  /* ---- Primary button (Zoom blue) ---- */
+  .btn-primary {
+    @apply bg-zoom-blue text-white font-semibold px-5 py-2.5 rounded-lg
+           hover:bg-zoom-blue-dark active:scale-95
+           transition-all duration-150 ease-in-out
+           disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  /* ---- Secondary / ghost button ---- */
+  .btn-secondary {
+    @apply bg-zoom-light-gray text-zoom-dark font-semibold px-5 py-2.5 rounded-lg
+           hover:bg-gray-200 active:scale-95
+           transition-all duration-150 ease-in-out;
+  }
+
+  /* ---- Form input ---- */
+  .input-field {
+    @apply w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm
+           focus:outline-none focus:ring-2 focus:ring-zoom-blue focus:border-transparent
+           placeholder:text-gray-400 transition-shadow duration-150;
+  }
+
+  /* ---- Card ---- */
+  .card {
+    @apply bg-white rounded-2xl shadow-sm border border-gray-100
+           hover:shadow-md transition-shadow duration-200;
+  }
+
+  /* ---- Control button (meeting room) ---- */
+  .ctrl-btn {
+    @apply flex flex-col items-center gap-1 p-3 rounded-xl
+           text-white hover:bg-white/10 active:bg-white/20
+           transition-colors duration-150 cursor-pointer select-none;
+  }
+
+  .ctrl-btn.active {
+    @apply bg-red-600 hover:bg-red-700;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #c7c7cc;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #8e8e93;
+}
