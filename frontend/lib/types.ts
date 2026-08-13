@@ -12,6 +12,7 @@ export interface User {
   name: string;
   email: string;
   avatar_color: string;
+  personal_meeting_id: string | null;
   created_at: string; // ISO-8601 string from JSON
 }
 
@@ -26,6 +27,7 @@ export interface Meeting {
   duration_minutes: number | null;
   invite_link: string;
   created_at: string;
+  ended_at: string | null;
 }
 
 export interface Participant {
@@ -52,4 +54,9 @@ export interface ScheduleMeetingRequest {
 
 export interface JoinMeetingRequest {
   display_name: string;
+}
+
+export interface UserUpdateRequest {
+  name?: string;
+  avatar_color?: string;
 }

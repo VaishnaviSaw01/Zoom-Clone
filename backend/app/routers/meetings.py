@@ -15,6 +15,7 @@ from datetime import datetime, timezone
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 
 from app.database import get_db
 from app import models, schemas
@@ -118,6 +119,46 @@ def schedule_meeting(
 
 
 # ---------------------------------------------------------------------------
+# POST /meetings/pmi  — start or reuse the Personal Meeting Room
+# Must be declared BEFORE /{meeting_code} to avoid route shadowing
+# ---------------------------------------------------------------------------
+@router.post("/pmi", response_model=schemas.MeetingResponse, status_code=201)
+def start_pmi_meeting(db: Session = Depends(get_db)):
+    """
+    Create (or fetch existing) a meeting whose code equals the host's PMI.
+    The same room is always reused for a user's Personal Meeting ID.
+    """
+    host = _get_default_user(db)
+    if not host.personal_meeting_id:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Personal Meeting ID not yet generated. Call GET /users/me first.",
+        )
+
+    code = host.personal_meeting_id
+    existing = (
+        db.query(models.Meeting)
+        .filter(models.Meeting.meeting_code == code)
+        .first()
+    )
+    if existing:
+        return existing
+
+    invite_link = f"{FRONTEND_ORIGIN}/join?code={code}"
+    meeting = models.Meeting(
+        meeting_code=code,
+        host_id=host.id,
+        title=f"{host.name}'s Personal Meeting Room",
+        status=models.MeetingStatus.instant,
+        invite_link=invite_link,
+    )
+    db.add(meeting)
+    db.commit()
+    db.refresh(meeting)
+    return meeting
+
+
+# ---------------------------------------------------------------------------
 # GET /meetings/upcoming  — must be declared BEFORE /{meeting_code}
 # ---------------------------------------------------------------------------
 @router.get("/upcoming", response_model=list[schemas.MeetingResponse])
@@ -151,11 +192,39 @@ def get_recent_meetings(db: Session = Depends(get_db)):
     meetings = (
         db.query(models.Meeting)
         .filter(models.Meeting.status != models.MeetingStatus.scheduled)
-        .order_by(models.Meeting.created_at.desc())
+        .order_by(func.coalesce(models.Meeting.ended_at, models.Meeting.created_at).desc())
         .limit(10)
         .all()
     )
     return meetings
+
+
+# ---------------------------------------------------------------------------
+# PATCH /meetings/{meeting_code}/end  — mark a meeting as ended
+# Must be declared BEFORE /{meeting_code} to avoid route shadowing
+# ---------------------------------------------------------------------------
+@router.patch("/{meeting_code}/end", response_model=schemas.MeetingResponse)
+def end_meeting(meeting_code: str, db: Session = Depends(get_db)):
+    """
+    Mark a meeting as ended (status = 'ended').
+    Called by the frontend when the host (or any participant) leaves.
+    This ensures the meeting appears in the 'Recent' list with the correct status.
+    """
+    meeting = (
+        db.query(models.Meeting)
+        .filter(models.Meeting.meeting_code == meeting_code)
+        .first()
+    )
+    if not meeting:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Meeting with code '{meeting_code}' not found.",
+        )
+    meeting.status = models.MeetingStatus.ended
+    meeting.ended_at = datetime.now(timezone.utc)
+    db.commit()
+    db.refresh(meeting)
+    return meeting
 
 
 # ---------------------------------------------------------------------------

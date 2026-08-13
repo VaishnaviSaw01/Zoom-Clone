@@ -37,7 +37,7 @@ export default function MeetingCard({ meeting, variant }: MeetingCardProps) {
   const dateStr =
     variant === "upcoming" && meeting.scheduled_start
       ? formatDate(meeting.scheduled_start)
-      : formatDate(meeting.created_at);
+      : formatDate(meeting.ended_at || meeting.created_at);
 
   async function handleCopy() {
     await navigator.clipboard.writeText(meeting.invite_link);
@@ -95,14 +95,16 @@ export default function MeetingCard({ meeting, variant }: MeetingCardProps) {
             <Copy className="w-4 h-4" />
           )}
         </button>
-        <a
-          href={`/meeting/${meeting.meeting_code}`}
-          id={`join-btn-${meeting.meeting_code}`}
-          className="text-xs font-semibold text-zoom-blue hover:text-zoom-blue-dark
-                     flex items-center gap-1 transition-colors duration-150"
-        >
-          Join <ExternalLink className="w-3 h-3" />
-        </a>
+        {meeting.status !== "ended" && (
+          <a
+            href={`/meeting/${meeting.meeting_code}`}
+            id={`join-btn-${meeting.meeting_code}`}
+            className="text-xs font-semibold text-zoom-blue hover:text-zoom-blue-dark
+                       flex items-center gap-1 transition-colors duration-150"
+          >
+            Join <ExternalLink className="w-3 h-3" />
+          </a>
+        )}
       </div>
     </div>
   );
