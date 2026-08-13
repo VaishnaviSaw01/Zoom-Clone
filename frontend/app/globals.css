@@ -18,6 +18,19 @@
   body {
     @apply bg-white text-zoom-dark;
   }
+
+  /* Dark mode base */
+  .dark body {
+    @apply bg-zinc-900 text-gray-100;
+  }
+
+  .dark .card {
+    @apply bg-zinc-800 border-zinc-700;
+  }
+
+  .dark .input-field {
+    @apply bg-zinc-800 border-zinc-600 text-gray-100 placeholder:text-gray-500;
+  }
 }
 
 @layer components {
@@ -36,9 +49,13 @@
            transition-all duration-150 ease-in-out;
   }
 
+  .dark .btn-secondary {
+    @apply bg-zinc-700 text-gray-100 hover:bg-zinc-600;
+  }
+
   /* ---- Form input ---- */
   .input-field {
-    @apply w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm
+    @apply w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm bg-white
            focus:outline-none focus:ring-2 focus:ring-zoom-blue focus:border-transparent
            placeholder:text-gray-400 transition-shadow duration-150;
   }
@@ -59,6 +76,25 @@
   .ctrl-btn.active {
     @apply bg-red-600 hover:bg-red-700;
   }
+
+  /* ---- Sidebar nav item ---- */
+  .sidebar-item {
+    @apply flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium
+           text-gray-600 hover:bg-gray-200 hover:text-zoom-dark
+           transition-colors duration-150 cursor-pointer select-none;
+  }
+
+  .sidebar-item.active {
+    @apply bg-zoom-blue-light text-zoom-blue hover:bg-zoom-blue-light;
+  }
+
+  .dark .sidebar-item {
+    @apply text-gray-400 hover:bg-zinc-700 hover:text-gray-100;
+  }
+
+  .dark .sidebar-item.active {
+    @apply bg-zoom-blue/20 text-zoom-blue hover:bg-zoom-blue/20;
+  }
 }
 
 /* Custom scrollbar */
@@ -74,4 +110,27 @@
 }
 ::-webkit-scrollbar-thumb:hover {
   background: #8e8e93;
+}
+
+/* VU meter animation */
+@keyframes vu-bounce {
+  0%, 100% { height: 4px; }
+  50% { height: 100%; }
+}
+
+/* ---- Emoji reaction float animation ---- */
+/* Defined here (not in tailwind.config.js) so it's NEVER purged.            */
+/* Emojis start near the bottom, scale-pop in, float upward, then fade out.  */
+@keyframes emojiFloat {
+  0%   { transform: translateY(0px)    scale(0.4); opacity: 0;   }
+  12%  { transform: translateY(-30px)  scale(1.2); opacity: 1;   }
+  75%  { transform: translateY(-320px) scale(1.0); opacity: 0.85; }
+  100% { transform: translateY(-520px) scale(0.7); opacity: 0;   }
+}
+
+.emoji-float {
+  animation: emojiFloat 3s ease-out forwards;
+  will-change: transform, opacity;
+  pointer-events: none;
+  user-select: none;
 }

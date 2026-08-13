@@ -48,6 +48,7 @@ class User(Base):
     name = Column(String(100), nullable=False)
     email = Column(String(200), unique=True, nullable=False)
     avatar_color = Column(String(20), default="#0E71EB")  # hex color for avatar
+    personal_meeting_id = Column(String(20), unique=True, nullable=True) # Fixed PMI for the user
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
     # back-reference so we can do user.hosted_meetings
@@ -79,6 +80,7 @@ class Meeting(Base):
     duration_minutes = Column(Integer, nullable=True, default=60)
     invite_link = Column(String(500), nullable=False)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    ended_at = Column(DateTime, nullable=True)
 
     host = relationship("User", back_populates="hosted_meetings")
     participants = relationship("Participant", back_populates="meeting", cascade="all, delete-orphan")

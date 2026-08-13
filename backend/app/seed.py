@@ -89,6 +89,7 @@ def seed():
             name="Vaishnavi",
             email="vaishnavi@zoomclone.dev",
             avatar_color="#0E71EB",
+            personal_meeting_id="pmi-987-6543",
         )
         db.add(user)
         db.flush()  # get user.id without committing

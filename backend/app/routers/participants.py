@@ -50,6 +50,18 @@ def join_meeting(
     """
     meeting = _get_meeting_or_404(meeting_code, db)
 
+    # Check if this user already joined
+    existing_participant = (
+        db.query(models.Participant)
+        .filter(
+            models.Participant.meeting_id == meeting.id,
+            models.Participant.display_name == body.display_name
+        )
+        .first()
+    )
+    if existing_participant:
+        return existing_participant
+
     # Determine host status: first person to join becomes the host
     existing_count = (
         db.query(models.Participant)

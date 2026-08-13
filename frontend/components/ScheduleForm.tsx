@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { CalendarDays, Copy, Loader2, CheckCircle2 } from "lucide-react";
 import { scheduleMeeting } from "@/lib/api";
@@ -74,6 +74,15 @@ export default function ScheduleForm() {
   }
 
   // ---- Success state ----
+  useEffect(() => {
+    if (created) {
+      const timer = setTimeout(() => {
+        router.push("/");
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [created, router]);
+
   if (created) {
     return (
       <div className="space-y-5 animate-slide-up">
@@ -114,6 +123,7 @@ export default function ScheduleForm() {
 
         <div className="flex gap-3">
           <button
+            id="back-to-dashboard-btn"
             className="btn-secondary flex-1"
             onClick={() => router.push("/")}
           >
@@ -127,6 +137,10 @@ export default function ScheduleForm() {
             Join Now
           </button>
         </div>
+        {/* Navigate back automatically so dashboard re-fetches and shows the new meeting */}
+        <p className="text-xs text-center text-gray-400 dark:text-gray-500">
+          Returning to dashboard in a few seconds…
+        </p>
       </div>
     );
   }

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { UserProvider } from "@/lib/user-context";
 
 export const metadata: Metadata = {
   title: "ZoomClone — Video Meetings Made Simple",
@@ -21,8 +22,29 @@ export default function RootLayout({
           href="https://fonts.gstatic.com"
           crossOrigin="anonymous"
         />
+        {/*
+          Inline script that reads localStorage BEFORE React hydrates to avoid
+          a flash of unstyled content on dark-mode pages.
+        */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  var t = localStorage.getItem('zoom-theme') || 'system';
+                  var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                  if (t === 'dark' || (t === 'system' && prefersDark)) {
+                    document.documentElement.classList.add('dark');
+                  }
+                } catch(e) {}
+              })();
+            `,
+          }}
+        />
       </head>
-      <body className="min-h-screen font-sans antialiased">{children}</body>
+      <body className="min-h-screen font-sans antialiased bg-white dark:bg-zinc-900">
+        <UserProvider>{children}</UserProvider>
+      </body>
     </html>
   );
 }

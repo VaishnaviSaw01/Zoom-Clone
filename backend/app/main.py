@@ -12,7 +12,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.database import engine, Base
-from app.routers import meetings, participants
+from app.routers import meetings, participants, users
 
 # ---------------------------------------------------------------------------
 # Create tables (runs on every startup; SQLAlchemy skips existing tables)
@@ -49,6 +49,7 @@ app.add_middleware(
 # ---------------------------------------------------------------------------
 app.include_router(meetings.router)
 app.include_router(participants.router)
+app.include_router(users.router)
 
 
 # ---------------------------------------------------------------------------

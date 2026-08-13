@@ -10,10 +10,12 @@
 
 import type {
   Meeting,
+  User,
   Participant,
   InstantMeetingRequest,
   ScheduleMeetingRequest,
   JoinMeetingRequest,
+  UserUpdateRequest,
 } from "./types";
 
 // Read from environment variable — never hardcode localhost in committed code.
@@ -28,6 +30,7 @@ async function apiFetch<T>(
 ): Promise<T> {
   const url = `${BASE_URL}${path}`;
   const res = await fetch(url, {
+    cache: "no-store",
     headers: {
       "Content-Type": "application/json",
       ...options?.headers,
@@ -51,6 +54,23 @@ async function apiFetch<T>(
 }
 
 // ---------------------------------------------------------------------------
+// Users API
+// ---------------------------------------------------------------------------
+
+/** Fetch the current (default) user. Also generates PMI if not yet set. */
+export async function getMe(): Promise<User> {
+  return apiFetch<User>("/users/me");
+}
+
+/** Update the current user's display name and/or avatar color. */
+export async function updateMe(body: UserUpdateRequest): Promise<User> {
+  return apiFetch<User>("/users/me", {
+    method: "PATCH",
+    body: JSON.stringify(body),
+  });
+}
+
+// ---------------------------------------------------------------------------
 // Meetings API
 // ---------------------------------------------------------------------------
 
@@ -71,6 +91,13 @@ export async function scheduleMeeting(
   return apiFetch<Meeting>("/meetings/schedule", {
     method: "POST",
     body: JSON.stringify(body),
+  });
+}
+
+/** Start (or fetch existing) the Personal Meeting Room. */
+export async function startPmiMeeting(): Promise<Meeting> {
+  return apiFetch<Meeting>("/meetings/pmi", {
+    method: "POST",
   });
 }
 
@@ -113,5 +140,13 @@ export async function getParticipants(
 ): Promise<Participant[]> {
   return apiFetch<Participant[]>(
     `/meetings/${encodeURIComponent(meetingCode)}/participants`
+  );
+}
+
+/** Mark a meeting as ended so it appears in recents with the correct status. */
+export async function endMeeting(meetingCode: string): Promise<Meeting> {
+  return apiFetch<Meeting>(
+    `/meetings/${encodeURIComponent(meetingCode)}/end`,
+    { method: "PATCH" }
   );
 }
