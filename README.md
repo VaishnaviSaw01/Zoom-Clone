@@ -221,8 +221,8 @@ zoom-clone/
 
 | Service | URL |
 |---|---|
-| Frontend (Vercel) | _TODO: add after deploy_ |
-| Backend (Render / Railway) | _TODO: add after deploy_ |
+| Frontend (Vercel) | zoom-clone-six-dusky.vercel.app |
+| Backend (Render) | https://zoom-clone-avyc.onrender.com |
 
 ---
 
