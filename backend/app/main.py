@@ -13,11 +13,15 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.database import engine, Base
 from app.routers import meetings, participants, users
+from app.seed import seed
 
 # ---------------------------------------------------------------------------
 # Create tables (runs on every startup; SQLAlchemy skips existing tables)
 # ---------------------------------------------------------------------------
 Base.metadata.create_all(bind=engine)
+
+# Automatically seed default user if not exists
+seed()
 
 # ---------------------------------------------------------------------------
 # App instance
